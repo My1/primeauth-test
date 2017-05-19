@@ -23,7 +23,7 @@ if(!isset($_GET["try"])) {
   $response=curl_exec($curl);
   $cstat=curl_errno($curl);
   $status=curl_getinfo($curl,CURLINFO_HTTP_CODE);
-  if($cstat==0) { //no problem, go to exchanging the token
+  if($cstat==0) {
     $data=json_decode($response,true);
     echo "<pre>";var_dump ($data);echo "</pre>";
     if($data["token"]) {
@@ -59,7 +59,7 @@ elseif($_GET["try"]) {
   $response=curl_exec($curl);
   $cstat=curl_errno($curl);
   $status=curl_getinfo($curl,CURLINFO_HTTP_CODE);
-  if($cstat==0) { //no problem, go to exchanging the token
+  if($cstat==0) {
     $data=json_decode($response,true);
     echo "<pre>";var_dump ($data);echo "</pre>";
     if($data["accepted"]==1) {
