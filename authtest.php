@@ -1,18 +1,16 @@
 <?php
-$pa_id  = ''; //numeric client ID
 $apptok = ""; //token of the application
-$appsec =""; //secret of the application
+$appsec = ""; //secret of the application
 
 if(!isset($_GET["try"])) {
   $apiurl="https://api.primeauth.com/api/v1/create/authreq.json";
   
   $adata=array(
     'email' => ("someone@example.com"), //email address to authenticate
-    'client_id' => $pa_id,
     'token' => $apptok,
     'secret' => $appsec,
     'ip_addr' => $_SERVER['REMOTE_ADDR'],
-    'comments' => 'Mugen Auth Beta isolated test'
+    'comments' => 'Some Comment' //optional
   );
   
   $curl=curl_init($apiurl);
@@ -22,16 +20,12 @@ if(!isset($_GET["try"])) {
     CURLOPT_POST=> true,
     CURLOPT_POSTFIELDS => http_build_query($adata)));
   
-  
-
-
   $response=curl_exec($curl);
   $cstat=curl_errno($curl);
   $status=curl_getinfo($curl,CURLINFO_HTTP_CODE);
-  $tokendata=json_decode($response,true);
   if($cstat==0) { //no problem, go to exchanging the token
-    echo "<pre>";var_dump ($response);echo "</pre>";
     $data=json_decode($response,true);
+    echo "<pre>";var_dump ($data);echo "</pre>";
     if($data["token"]) {
       echo "<a href=?try=".$data["token"].">Login</a>";
     }
@@ -46,10 +40,7 @@ if(!isset($_GET["try"])) {
 }
 
 
-
-
 elseif($_GET["try"]) {
-  //header("Content-Type: text/plain");
   $apiurl="https://www.primeauth.com/api/v1/check/id.json";
   
   $adata=array(
@@ -68,11 +59,12 @@ elseif($_GET["try"]) {
   $response=curl_exec($curl);
   $cstat=curl_errno($curl);
   $status=curl_getinfo($curl,CURLINFO_HTTP_CODE);
-  $tokendata=json_decode($response,true);
   if($cstat==0) { //no problem, go to exchanging the token
-    //echo "<pre>";var_dump ($response);echo "</pre>";
-    //$data=json_decode($response,true);
-    echo ($response);
+    $data=json_decode($response,true);
+    echo "<pre>";var_dump ($data);echo "</pre>";
+    if($data["accepted"]==1) {
+      echo "Login complete for ".$data["email"];
+    }
   }
   else{ //curl screwed up. log the error and return false
     $log=fopen("opa-log.txt","ab");
