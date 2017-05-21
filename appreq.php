@@ -2,11 +2,20 @@
 $apptok = ""; //token of the application
 $appsec = ""; //secret of the application
 
-if(!isset($_GET["try"])) {
+if(!($_POST) && !($_GET)) {
+  echo <<<endlogin
+  <form method="post">
+  <input type="text" name="email">
+  <input type="submit">
+  </form>
+endlogin;
+  die();
+}
+elseif(isset($_POST["email"])) {
   $apiurl="https://api.primeauth.com/api/v1/create/authreq.json";
   
   $adata=array(
-    'email' => ("someone@example.com"), //email address to authenticate
+    'email' => $_POST["email"], //email address to authenticate
     'token' => $apptok,
     'secret' => $appsec,
     'ip_addr' => $_SERVER['REMOTE_ADDR'],
@@ -24,10 +33,11 @@ if(!isset($_GET["try"])) {
   $cstat=curl_errno($curl);
   $status=curl_getinfo($curl,CURLINFO_HTTP_CODE);
   if($cstat==0) {
+    var_dump ($status);
     $data=json_decode($response,true);
     echo "<pre>";var_dump ($data);echo "</pre>";
-    if($data["token"]) {
-      echo "<a href=?try=".$data["token"].">Login</a>";
+    if($data["id"]) {
+      echo "<a href=?try=".$data["id"].">Login</a>";
     }
   }
   else{ //curl screwed up. log the error and return false
