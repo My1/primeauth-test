@@ -21,9 +21,9 @@ if(!isset($_GET["try"])) {
   $cstat=curl_errno($curl);
   $status=curl_getinfo($curl,CURLINFO_HTTP_CODE);
   if($cstat==0) {
-    var_dump ($status);
-    $data=json_decode($response,true);
-    echo "<pre>";var_dump ($data);echo "</pre>";
+    var_dump ($status); // HTTP status code
+    $data=json_decode($response,true); //just for the sake of it (and in case it isnt json in case of an error
+    echo "<pre>";var_dump ($data);echo "</pre>"; //php's interpretation
     if($data["id"]) {
       echo "<img src='https://api.primeauth.com/pascan/qrcode?id=".$data["id"]."'>";
       echo "<a href=?try=".$data["id"].">Login</a>";
@@ -60,6 +60,7 @@ elseif($_GET["try"]) {
   $status=curl_getinfo($curl,CURLINFO_HTTP_CODE);
   if($cstat==0) {
     var_dump ($status);
+    echo $response;
     $data=json_decode($response,true);
     echo "<pre>";var_dump ($data);echo "</pre>";
     if($data["accepted"]==1) {
