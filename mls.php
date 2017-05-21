@@ -2,11 +2,20 @@
 $apptok = "";
 $appsec = "";
 
-if(!isset($_GET["try"])&&!isset($_GET["mls_token"])) {
+if(!($_POST) && !($_GET)) {
+  echo <<<endlogin
+  <form method="post">
+  <input type="text" name="email">
+  <input type="submit">
+  </form>
+endlogin;
+  die();
+}
+elseif(isset($_POST["email"])) {
   $apiurl="https://api.primeauth.com/api/v1/mls/create.json";
   
   $adata=array(
-    'email' => ("someone@example.com"),
+    'email' => $_POST["email"],
     'token' => $apptok,
     'secret' => $appsec,
     'redir' => 'https://'.$_SERVER['HTTP_HOST'].preg_replace('/\/$/','',preg_replace('/\/\//','/',dirname('/'.str_ireplace(str_ireplace('\\','/',$_SERVER['DOCUMENT_ROOT']),'',str_ireplace('\\','/',__FILE__))))).'/mls.php'
@@ -23,10 +32,11 @@ if(!isset($_GET["try"])&&!isset($_GET["mls_token"])) {
   $status=curl_getinfo($curl,CURLINFO_HTTP_CODE);
   $tokendata=json_decode($response,true);
   if($cstat==0) { //no problem, go to exchanging the token
+  var_dump($status);
     echo "<pre>";var_dump ($response);echo "</pre>";
     $data=json_decode($response,true);
-    if($data["token"]) {
-      echo "<a href=?try=".$data["token"].">Login</a>";
+    if($data["id"]) {
+      echo "<a href=?try=".$data["id"].">Login</a>";
     }
   }
   else{ //curl screwed up. log the error and return false
@@ -41,8 +51,7 @@ elseif(isset($_GET["try"]) && $_GET["try"]) { //manual check
   $apiurl="https://api.primeauth.com/api/v1/mls/check.json";
   
   $adata=array(
-    'email' => ("teamhydro55555@gmail.com"),
-    'mls_token' => $_GET["try"],
+    'id' => $_GET["try"],
     'token' => $apptok,
     'secret' => $appsec
   );
@@ -61,7 +70,7 @@ elseif(isset($_GET["try"]) && $_GET["try"]) { //manual check
     $data=json_decode($response,true);
     echo "<pre>";var_dump ($data);echo "</pre>";
     if($data["accepted"]=="true") {
-      echo "Login complete for ".$adata["email"];
+      echo "Login complete for ".$data["email"];
     }
   }
   else{ //curl screwed up. log the error and return false
@@ -72,12 +81,11 @@ elseif(isset($_GET["try"]) && $_GET["try"]) { //manual check
   }
   die(); 
 }
-elseif(isset($_GET["mls_token"])) { //came through redirect URL, generally the same
+elseif(isset($_GET["id"])) { //came through redirect URL, generally the same
   $apiurl="https://api.primeauth.com/api/v1/mls/check.json";
   
   $adata=array(
-    'email' => $_GET["email"],
-    'mls_token' => $_GET["mls_token"],
+    'id' => $_GET["id"],
     'token' => $apptok,
     'secret' => $appsec
   );
@@ -96,7 +104,7 @@ elseif(isset($_GET["mls_token"])) { //came through redirect URL, generally the s
     $data=json_decode($response,true);
     echo "<pre>";var_dump ($data);echo "</pre>";
     if($data["accepted"]=="true") {
-      echo "Login complete for ".$_GET["email"];
+      echo "Login complete for ".$data["email"];
     }
   }
   else{ //curl screwed up. log the error and return false
