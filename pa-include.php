@@ -66,17 +66,13 @@ class mugen_pa {
     $cstat=curl_errno($curl);
     $status=curl_getinfo($curl,CURLINFO_HTTP_CODE);
     if($cstat==0) {
-      //var_dump ($status); // HTTP status code
       $data=json_decode($response,true); //just for the sake of it (and in case it isnt json in case of an error
-      //echo "<pre>";var_dump ($data);echo "</pre>"; //php's interpretation
       if(isset($data["error"]) && $data["error"]) {
         $log=fopen("opa-log.txt","ab");
         fwrite ($log,"PA Login API Error (step1): $status. -> ".$response."\n");
         fclose($log);
       }
       elseif($data["id"]) {
-        //echo "<img src='https://api.primeauth.com/pascan/qrcode?id=".$data["id"]."'>";
-        //echo "<a href=?try=".$data["id"].">Login</a>";
         return $data["id"];
       }
       else echo($response);
@@ -114,12 +110,8 @@ class mugen_pa {
     $cstat=curl_errno($curl);
     $status=curl_getinfo($curl,CURLINFO_HTTP_CODE);
     if($cstat==0) {
-      //var_dump ($status);
-      //echo $response;
       $data=json_decode($response,true);
-      //echo "<pre>";var_dump ($data);echo "</pre>";
       if($data["accepted"]==1) {
-        //echo "Login complete for ".$data["email"];
         return $data["email"];
       }
       else return false;
